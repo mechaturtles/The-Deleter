@@ -44,7 +44,7 @@ print("Accessing " + path)
 sess_total = 0 # Total of files deleted for the session
 
 ans = "y"
-while ans == "y": # Repeat until ans is valid
+while ans == "y" or ans =="": # Repeat until ans is valid
     dir = os.listdir(path)
     suffix = input("\nWhat extension are you looking for?\n")
 
@@ -61,27 +61,36 @@ while ans == "y": # Repeat until ans is valid
     for file in list:
         bsize = os.path.getsize(addpath + file) # Size in bytes
         fsize = filesize(bsize) # Filesize value is obtained and turned into int value
-        print("{0:50}     {1:10} {2:3}".format(file, fsize[0], fsize[1]))
+        print("{0:50}     {1:3} {2:3}".format(file, fsize[0], fsize[1]))
         select_total += bsize
 
     select_size = filesize(select_total)
 
     if select_total == 0:
         print("\nNo files found.")
-    elif input("\nWould you like to delete all files? {} {} selected. (y/n)\n".format(select_size[0], select_size[1])) == "y":
-        for file in list:
-            bsize = delete(file)
-            if bsize != 0: # Call on delete function
-                del_total += bsize
-        del_size = filesize(del_total)
-        print("\nDeletion complete. Deleted {} {} out of {} {} selected.".format(del_size[0], del_size[1], select_size[0], select_size[1]))
+    else:
+        while True:
+            ans = input("\nWould you like to delete all files? {} {} selected. (y/n)\n".format(select_size[0], select_size[1]))
+            if ans == "y":
+                for file in list:
+                    bsize = delete(file)
+                    del_total += bsize
+                del_size = filesize(del_total)
+                print("\nDeletion complete. Deleted {} {} out of {} {} selected.".format(del_size[0], del_size[1], select_size[0], select_size[1]))
+                sess_total += del_total
+                break
+            elif ans == "n":
+                break
+            else:
+                print("Invalid input.")
 
 
     while True:
         ans = input("\nRestart? (y/n)\n")
-        if ans == "n" or ans == "y":
+        if ans == "n" or ans == "y" or ans == "":
             break
         else:
             print("Invalid input.\n")
 
-ans = input("\nProgram finished. Press enter to exit.\n")
+sess_size = filesize(sess_total)
+ans = input("\nProgram finished. {} {} worth of files deleted during this session. Press enter to exit.\n".format(sess_size[0], sess_size[1]))
